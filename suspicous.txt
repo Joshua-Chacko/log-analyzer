@@ -1,0 +1,8 @@
+ERROR: Failed to connect to database
+FAILED: Authentication unsuccessful
+INVALID credentials provided for user jane
+ERROR: INVALID token provided by user
+FAILED: LOCKED account tried to reset password
+Total suspicious Count: 5
+192.168.1.1: 2
+User john: 1

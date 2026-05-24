@@ -6,6 +6,8 @@ System running normally
 INVALID credentials provided for user jane
 Account has been LOCKED due to too many attempts
 UNAUTHORIZED access attempted from IP 192.168.1.1
+denied access attempted from IP 192.168.1.1
+User successfully accessed IP 192.162.2.4
 ANONYMOUS user tried to access restricted area
 System checkpoint passed
 Regular log entry nothing to see here
