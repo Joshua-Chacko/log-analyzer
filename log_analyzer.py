@@ -1,28 +1,24 @@
 import re
 
-# checks for any suspicous IP's
+# checks for any suspicious IP's
 def check_ip(line, ip_dict):
     match = re.search(r"\b\d{1,3}(?:\.\d{1,3}){3}\b", line)
     if not match:
         return
-    
     ip = match.group(0)
-
     if any(keyword in line.lower() for keyword in ["fail", "unauthorized", "denied"]):
         ip_dict[ip] = ip_dict.get(ip, 0) + 1
 
-# checks for any suspicous usernames
+# checks for any suspicious usernames
 def check_user(line, user_dict):
     match = re.search(r"User\s+(\w+)", line)
     if not match:
         return
-    
     user = match.group(0)
-
     if any(keyword in line.lower() for keyword in ["attempted", "failed", "invalid"]):
         user_dict[user] = user_dict.get(user, 0) + 1
 
-# check for any suspicous lines
+# check for any suspicious lines
 def check_sus(line, warningLines, keyword, count):
     if line not in warningLines and keyword in line:
         warningLines.append(line)
@@ -30,7 +26,7 @@ def check_sus(line, warningLines, keyword, count):
     return count
 
 def log_analyzer() -> None: 
-# instantiating varaiables
+# initalizing varaiables
     date = ""
     time = ""
     count = 0
@@ -61,7 +57,7 @@ def log_analyzer() -> None:
         else:
             print("Not a severity level")
 
-    # keywords and each line of suspicous activity instantiated
+    # keywords and each line of suspicious activity instantiated
     keywords = log_levels[level]
     warningLines = []
 
@@ -80,23 +76,33 @@ def log_analyzer() -> None:
                     check_ip(line, ip_dict)
                     check_user(line, user_dict)
         # if there is no provided date or time
-        else:
+        elif not date and not time:
             for line in file:
                 for keyword in keywords:
                     count = check_sus(line, warningLines, keyword, count)
                 check_ip(line, ip_dict)
                 check_user(line, user_dict)
 
-
+    temp_count = count
     # write all the given lines to the text file
     filename = filename.rsplit(".", 1)[0]
     with open(f"{filename}.txt", 'w') as file:
         for line in warningLines: 
             file.write(line)
-        file.write(f"Total suspicious Count: {count}\n")
+        file.write("=" * 41 + "\n")
+        file.write((" "*16) + "SUMMARY" + "\n")
+        file.write("=" * 41+ "\n")
         for ip, counts in ip_dict.items():
             if counts >= 5:
                 file.write(f"{ip}: {counts}\n")
+                temp_count += counts
         for user, counts in user_dict.items():
             if counts >= 5:
                 file.write(f"{user}: {counts}\n")
+                temp_count += counts
+        file.write(f"Total suspicious Count: {count}\n")
+        if temp_count == 0:
+            file.write("No Suspicious Activity")
+
+if __name__ == "__main__":
+    log_analyzer()
